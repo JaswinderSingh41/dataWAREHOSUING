@@ -1,0 +1,178 @@
+TABLE FACT_VISITS{
+  visit_fact_key integer [pk] 
+  patient_key integer [ref:> DIM_PATIENT_SCD2.patient_key]
+  doctor_key integer  [ref:> DIM_DOCTOR.DOCTOR_KEY]
+  department_key integer [ref:> DIM_DEPARTMENT.department_key]
+  date_key integer [ref:> DIM_DATE.DATE_KEY]
+  location_key integer [ref:> DIM_LOCATIONS.location_key]
+  visit_count integer  [note:'Metrics']
+  diagnosis_key integer [ref:> DIM_DIAGNOSIS.diagnosis_key]
+  consultation_time_min integer [note:'Metrics']
+  visit_cost decimal(2,2) [note:'Metrics']
+  wait_time_min integer [note:'Metrics']
+}
+
+TABLE FACT_ADMISSION{
+  admission_fact_key integer [pk]
+  patient_key integer [ref:> DIM_PATIENT_SCD2.patient_key]
+  doctor_key integer  [ref:> DIM_DOCTOR.DOCTOR_KEY]
+  department_key integer [ref:> DIM_DEPARTMENT.department_key]
+  admit_date_key integer [ref:> DIM_DATE.DATE_KEY] //Role Playing Dimension
+  diagnosis_key integer [ref:> DIM_DIAGNOSIS.diagnosis_key]
+  discharge_date_key integer  [ref:> DIM_DATE.DATE_KEY] //Role Playing Dimension
+  room_type varchar [note:'Measure']
+  admission_type varchar [note:'Measure']
+  length_of_stay integer 
+  total_cost decimal (15,2)
+}
+
+TABLE FACT_LAB_TESTS{
+  LAB_TEST_FACT_KEY INTEGER [PK]
+  patient_key integer [ref:> DIM_PATIENT_SCD2.patient_key]
+  doctor_key integer  [ref:> DIM_DOCTOR.DOCTOR_KEY]
+  department_key integer [ref:> DIM_DEPARTMENT.department_key]
+  date_key integer [ref:> DIM_DATE.DATE_KEY]
+  PROCEDURE_KEY INTEGER [ref:> DIM_PROCEDURE.PROCEDURE_KEY]
+  test_result_value varchar
+  test_cost decimal(2,2)
+  test_count integer [default:1]
+}
+
+TABLE FACT_SURGERY{
+  SURGERY_FACT_KEY INTEGER [PK]
+  patient_key integer [ref:> DIM_PATIENT_SCD2.patient_key]
+  doctor_key integer  [ref:> DIM_DOCTOR.DOCTOR_KEY]
+  department_key integer [ref:> DIM_DEPARTMENT.department_key]
+  date_key integer [ref:> DIM_DATE.DATE_KEY]
+  PROCEDURE_KEY INTEGER [ref:> DIM_PROCEDURE.PROCEDURE_KEY]
+  duration integer
+  surgery_cost decimal(14,2)
+  success_flag boolean
+  complication_flag boolean
+}
+
+TABLE FACT_PHARMACY{
+  PHARMARY_FACT_KEY INTEGER [PK]
+  patient_key integer [ref:> DIM_PATIENT_SCD2.patient_key]
+  doctor_key integer  [ref:> DIM_DOCTOR.DOCTOR_KEY]
+  department_key integer [ref:> DIM_DEPARTMENT.department_key]
+  date_key integer [ref:> DIM_DATE.DATE_KEY]
+  drug_key integer [ref:> DIM_DRUG.drug_key]
+  quantity integer 
+  unit_price decimal(12,2)
+  total_price decimal(12,2)
+}
+
+TABLE FACT_BED_OCCUPANCY{
+  BED_FACT_KEY INTEGER [PK]
+  patient_key integer [ref:> DIM_PATIENT_SCD2.patient_key]
+  doctor_key integer  [ref:> DIM_DOCTOR.DOCTOR_KEY]
+  department_key integer [ref:> DIM_DEPARTMENT.department_key]
+  date_key integer [ref:> DIM_DATE.DATE_KEY]
+  BED_ID varchar
+  BED_TYPE varchar
+  OCCUPIED_FLAG BOOLEAN
+}
+
+TABLE FACT_BILLING{
+  BILLING_fACT_KEY INTEGER [PK]
+  patient_key integer [ref:> DIM_PATIENT_SCD2.patient_key]
+  doctor_key integer  [ref:> DIM_DOCTOR.DOCTOR_KEY]
+  department_key integer [ref:> DIM_DEPARTMENT.department_key]
+  date_key integer [ref:> DIM_DATE.DATE_KEY]
+  INSURANCE_KEY INTEGER [REF:>DIM_INSURANCE.INSURANCE_KEY]
+  INSURANCE_COVERED_FLAG BOOLEAN
+  GROSS_AMOUNT DECIMAL(15,2)
+  PAYABLE VARCHAR 
+  DISCOUNT DECIMAL(12,2)
+  NET_AMOUNT DECIMAL(15,2)
+}
+
+TABLE DIM_INSURANCE{
+  INSURANCE_KEY INTEGER [PK]
+  //OTHER DETIALS 
+}
+
+TABLE DIM_DRUG{
+  drug_key integer [pk]
+  drug_name varchar
+  drug_cost decimal(14,2)
+  category varchar 
+  //other columns 
+}
+
+TABLE DIM_PROCEDURE{
+  PROCEDURE_KEY integer [pk]
+  PROCEDURE_CODE VARCHAR
+  PROCEDURE_name integer
+  PROCEDURE_TYPE varchar
+  STANDARD_COST DECIMAL(2,2)  
+}
+
+TABLE DIM_DIAGNOSIS{
+  diagnosis_key integer [pk]
+  diagnosis_name varchar
+  diagnosis_category varchar
+  chronic_flag boolean
+}
+
+TABLE DIM_LOCATIONS{
+  location_key integer [pk]
+  hospital_name varchar
+  branch_name varchar
+  city varchar
+  state varchar
+  country varchar
+  region varchar
+}
+
+TABLE DIM_DATE{
+  DATE_KEY integer [pk]
+  full_date date
+  day integer 
+  month integer 
+  month_name varchar
+  quarter varchar
+  year integer
+  week_number integer
+  is_weekend boolean
+}
+
+//SCD TYPE2
+TABLE DIM_PATIENT_SCD2{  
+  patient_key integer [pk]
+  patient_id varchar
+  first_name varchar
+  last_name varchar
+  gender varchar
+  DOB date
+  BLOOD_GROUP varchar
+  phone_number varchar
+  EFFECTIVE_DATE DATe
+  EXPIRY_DATE date
+  IS_CURRENT  BOOLEAN
+
+  //---Other columns as well
+}
+
+TABLE DIM_DOCTOR{
+  DOCTOR_KEY interger [pk]
+  doctor_id integer
+  Doctor_name varchar
+  Gender varchar
+  department_key integer [ref:> DIM_DEPARTMENT.department_key]
+  Speciality varchar
+  YOE integer
+  Active_flag boolean
+}
+
+TABLE DIM_DEPARTMENT{
+  department_key integer
+  department_id varchar
+  dept_name varchar
+  floor integer
+  building varchar
+
+//--Other columns as well
+
+}
